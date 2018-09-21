@@ -249,6 +249,163 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.xuman-amy.cn/2018/09/21/createte-blog-with-hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Amy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大毛毛啊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/21/createte-blog-with-hexo/" itemprop="url">createte_blog_with_hexo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-21T17:44:19+08:00">
+                2018-09-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/09/21/createte-blog-with-hexo/" class="leancloud_visitors" data-flag-title="createte_blog_with_hexo">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="使用hexo和github搭建个人博客"><a href="#使用hexo和github搭建个人博客" class="headerlink" title="使用hexo和github搭建个人博客"></a>使用hexo和github搭建个人博客</h1><p>欢迎访问个人博客~          <a href="http://www.xuman-amy.cn/">大毛毛啊</a></p>
+<ol>
+<li>安装node.js并配置环境</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/EA80E525262640189AC7B6234B82EC48?method=download&amp;shareKey=766bfede1819f98a5899efa0b66f4dba" alt=""></p>
+<ol start="2">
+<li>安装git</li>
+</ol>
+<p>进入github官网，新建仓库。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/435FE85F9FDA48A6864AB5CD3534ECE3?method=download&amp;shareKey=502b98616b2a903c9ced1cff860902e4" alt=""></p>
+<ol start="3">
+<li>安装hexo</li>
+</ol>
+<p>打开cmd终端，进入你想安装的目录，输入命令</p>
+<figure class="highlight plain"><figcaption><span>install hexo -g```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">验证安装是否成功</span><br><span class="line"></span><br><span class="line">![](https://note.youdao.com/yws/api/personal/file/8D5B87A027CA499EB1C4C66934884B86?method=download&amp;shareKey=91590e39b455e7026feb645709f13247)</span><br><span class="line"></span><br><span class="line">4. 初始化hexo</span><br><span class="line"></span><br><span class="line">进入一个空目录，输入命令   </span><br><span class="line">```hexo init</span><br></pre></td></tr></table></figure>
+<p><strong>喝杯豆浆，静静等待~~~嘻嘻</strong></p>
+<p>安装完成，看到了 “INFO  Start blogging with Hexo!”</p>
+<ol start="5">
+<li>安装hexo所需组件</li>
+</ol>
+<figure class="highlight plain"><figcaption><span>install```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">6. 测试一下hexo，主题等可以后期更改</span><br><span class="line"></span><br><span class="line">```hexo -g```构建blog  </span><br><span class="line">```hexo -s```发布在本地服务器  </span><br><span class="line"></span><br><span class="line">7. 连接git</span><br><span class="line"></span><br><span class="line">进入目录_config.yml,配置最后的deploy，注意格式，冒号后个空格，每行开始空两个空格。</span><br></pre></td></tr></table></figure>
+<p>deploy:<br>  type: git<br>  repository: <a href="mailto:git@github.com" target="_blank" rel="noopener">git@github.com</a>:xuman-Amy/xuman-Amy.github.io.git<br>  branch: master<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">之后下载一个插件</span><br><span class="line"></span><br><span class="line">```npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure></p>
+<ol start="8">
+<li>测试一下新博文</li>
+</ol>
+<figure class="highlight plain"><figcaption><span>new "blog_name" ```  </span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">```hexo g```  </span><br><span class="line">```hexo d</span><br></pre></td></tr></table></figure>
+<p>关于优化的小故事，有时间会继续更的~~</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.xuman-amy.cn/2018/09/21/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1378,7 +1535,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1400,7 +1557,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
