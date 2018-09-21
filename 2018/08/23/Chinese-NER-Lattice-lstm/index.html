@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+
+
+
+  
+
+<html class="theme-next pisces use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="-paper notes," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="paper title：《Chinese NER Using Lattice LSTM》摘要对于中文命名实体识别，我们研究了一种lattice结构的lstm模型（lattice-structured LSTM），这个模型能够对输入的字符序列以及序列中能够与字典相匹配的隐藏的词信息一同编码。 相比于基于字粒度的方法，lattice的能够更好的利用字以及字序列的信息。相比于词粒度的方法，lattic">
+<meta name="keywords" content="-paper notes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chinese-NER-Lattice-lstm">
+<meta property="og:url" content="http://www.xuman-amy.cn/2018/08/23/Chinese-NER-Lattice-lstm/index.html">
+<meta property="og:site_name" content="大毛毛啊">
+<meta property="og:description" content="paper title：《Chinese NER Using Lattice LSTM》摘要对于中文命名实体识别，我们研究了一种lattice结构的lstm模型（lattice-structured LSTM），这个模型能够对输入的字符序列以及序列中能够与字典相匹配的隐藏的词信息一同编码。 相比于基于字粒度的方法，lattice的能够更好的利用字以及字序列的信息。相比于词粒度的方法，lattic">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBbaf4bde4736a74b5ab54f2b1656e16c1?method=download&shareKey=0478b2c82daa1e4a30d679217098d62e">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBf49ef09e4a09dcb297d4025d15f14123?method=download&shareKey=f22f298a052037ebae73925e985c7fbd">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB7f49214d676576dcdda9aad470b0db33?method=download&shareKey=8e11349817c7066b339a9bd9595564ce">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB6290f32a0f17abc4adcb550261f48fbd?method=download&shareKey=628adda913259538922e1a037be7cdea">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB66f6c5e6c56c887a97df9203f2a66720?method=download&shareKey=59cbc3665400a0a54f1497087c4c3577">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBf8b64dedd312ff26aeaab0d9d9f38d3d?method=download&shareKey=3491775a5181e4888dae9658b272c0ac">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB063b9d81753b5c3e9ae9082dc3cab689?method=download&shareKey=28ba20b3cb2149916b83ae3d05556574">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB4fdfcede7d46963b0ed30bb105748a7f?method=download&shareKey=8b67edfa873a201e290276a95e4c1012">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBa7b3186a364025dbbba392bf31824e26?method=download&shareKey=7ea8071bcd530044d91adbabf9f3d8af">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBc713500f216293eb80ddf385e291f2a9?method=download&shareKey=74b15993625a05007024583c2b743771">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB591a50b93830ceace48efaec89918c99?method=download&shareKey=95d02799e39a53cae9a0f8c4b042a2f1">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB64fc7b64f4d13721916ac6eabf280291?method=download&shareKey=6a6e2b9c6acb33d2b7d17f714f80fd51">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB8218451fc2f6fdc9e8a0fc37edc7f920?method=download&shareKey=1e0d01638c9cddefcf70d2e34cc123cd">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB7ea3e529044a35661d32c8266dd9f562?method=download&shareKey=8870a7fbfd66e3b7665269e5aa641957">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBb25cef51add1bc41ce58f11ab6481eef?method=download&shareKey=ccb230ab17b94679a58a10595c3a5686">
+<meta property="og:updated_time" content="2018-09-21T09:38:35.294Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chinese-NER-Lattice-lstm">
+<meta name="twitter:description" content="paper title：《Chinese NER Using Lattice LSTM》摘要对于中文命名实体识别，我们研究了一种lattice结构的lstm模型（lattice-structured LSTM），这个模型能够对输入的字符序列以及序列中能够与字典相匹配的隐藏的词信息一同编码。 相比于基于字粒度的方法，lattice的能够更好的利用字以及字序列的信息。相比于词粒度的方法，lattic">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/WEBbaf4bde4736a74b5ab54f2b1656e16c1?method=download&shareKey=0478b2c82daa1e4a30d679217098d62e">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.xuman-amy.cn/2018/08/23/Chinese-NER-Lattice-lstm/"/>
+
+
+
+
+
+  <title>Chinese-NER-Lattice-lstm | 大毛毛啊</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+<a href="https://github.com/xuman-Amy"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大毛毛啊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.xuman-amy.cn/2018/08/23/Chinese-NER-Lattice-lstm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Amy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大毛毛啊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Chinese-NER-Lattice-lstm</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-23T10:49:30+08:00">
+                2018-08-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/23/Chinese-NER-Lattice-lstm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/08/23/Chinese-NER-Lattice-lstm/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/08/23/Chinese-NER-Lattice-lstm/" class="leancloud_visitors" data-flag-title="Chinese-NER-Lattice-lstm">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script></p>
+<h1 id="paper-title：《Chinese-NER-Using-Lattice-LSTM》"><a href="#paper-title：《Chinese-NER-Using-Lattice-LSTM》" class="headerlink" title="paper title：《Chinese NER Using Lattice LSTM》"></a>paper title：《Chinese NER Using Lattice LSTM》</h1><h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>对于中文命名实体识别，我们研究了一种lattice结构的lstm模型（lattice-structured LSTM），这个模型能够对输入的字符序列以及序列中能够与字典相匹配的隐藏的词信息一同编码。</p>
+<p>相比于基于字粒度的方法，lattice的能够更好的利用字以及字序列的信息。相比于词粒度的方法，lattice避免了分词带来的错误。门控循环单元能够使得模型选择最相关的字和词，得到更好的NER结果。在多种数据的实验中表明，lattice的性能优于基于字粒度和词粒度的lstm，能够得到best结果。</p>
+<h1 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h1><p>近几年，作为信息抽取领域中的基本任务，命名实体识别（NER）得到了持续的研究关注。NER一直被看作是一项序列标注问题，他的实体边缘和类别标记一起被预测出来。英文NER中最好的结果是通过lstm-crf模型将字信息融入到词表示中得到的。</p>
+<p>中文NER与分词有关，特别是实体的边界就是词的边界。中文NER的一种方式是先分词，然后对词序列进行NER标注。这种分词-&gt;NER的pipeline很容易受到传播错误，因为在分词中命名实体是OOV（out-of-vocabulary）的重要来源，而且错误的分割实体边缘也会导致NER的错误。这种问题在开放领域更为严重，因为交叉领域中的词分割还存在很多待解决问题。所以词粒度的性能要比字粒度的性能要好。</p>
+<p>基于字粒度的NER的缺点是忽略了字以及字序列的信息。解决方法是利用lattice结构的lstm将句子中潜在的词信息融入到字粒度的lstm-crf中。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEBbaf4bde4736a74b5ab54f2b1656e16c1?method=download&amp;shareKey=0478b2c82daa1e4a30d679217098d62e" alt="figure 1 "></p>
+<p>如上图，通过将句子与自动得到的较大的词典匹配构建一个字-词的lattice结构。例子中是得到了“长江大桥”“大桥”“长江”可以消除文中潜在命名实体的歧义，例如与文中的“江大桥”。</p>
+<p>因为一个lattice中的字-词会有指数级的路径，所以构建了一个lattice lstm结构自动控制信息流从句子开始流到句子结尾。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEBf49ef09e4a09dcb297d4025d15f14123?method=download&amp;shareKey=f22f298a052037ebae73925e985c7fbd" alt="figure 2"></p>
+<p>如上图，通过门单元动态的将不同路径得到的词输送到相应的字符。在NER数据上训练，lattice lstm能够自动的在文中找到更多的词信息来达到更好的NER性能。与只依赖于字信息和只只依赖于词信息的NER相比，lsttice lstm 能够不受分词错误的影响，并将明确的词信息作用于字序列标注上的优点。</p>
+<p><strong><a href="https://github.com/jiesutd/LatticeLSTM" target="_blank" rel="noopener">代码及数据git地址</a></strong></p>
+<h1 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h1><p>神经网络运用与NER的方法：</p>
+<ul>
+<li>Hammerton ：单向lstm，第一次将神经网络应用于NER</li>
+<li>Collobert ：CNN-CRF</li>
+<li>dos Santos：character CNN + cnn-crf</li>
+<li>最多的：lstm-crf</li>
+<li>Lample：character LSTM</li>
+</ul>
+<p>基于字序列的标注成为中文NER的主流方法。在统计上来看，对于字粒度和词粒度的NER<br>方法的讨论表明字粒度的性能更优，对于神经网络中的NER方法也是如此。<br>另外，lattice lstm要优于word LSTM和character LSTM.</p>
+<p>本模型不需要分词也不需要考虑多任务的设置。</p>
+<p>NER任务中会经常使用外部信息源，尤其是词典特征被广泛使用。在本论文中是在大量自动分词的文本中使用预训练的word embedding 词典。同时类似与语言模型的半监督方法也可以到lattice lstm中。</p>
+<p>lattice 结构的RNN可以看作是树结构的RNN向DAGs(Directed acyclic graph，有向无环图）的延伸。本文中的lattice lstm是以字符为中心的lattice-lstm-crf序列标注模型，对于词，有循环单元但是没有隐藏单元。</p>
+<p>是第一个将字符与词混合起来构建lattice的，也是都一个将word-character lattice 应用于不用分词的中文NER任务中的。</p>
+<h1 id="3-模型"><a href="#3-模型" class="headerlink" title="3 模型"></a>3 模型</h1><p>使用lstm-crf作为主要的网络结构。</p>
+<p>一般将输入序列表示为<code>$s = c_{1},c_{2}...c_{m}$</code><br>其中，<code>$c_{j}$</code>代表第j个字符。也可以把输入表示为<code>$s = w_{1},w_{2}...w_{m}$</code>，其中<code>$w_{j}$</code>表示句子分词后的第j个词。本文中应用t(i,k)表示索引j，代表第i个单词的第k个字符。比如“南京市 长江大桥”,索引从1开始，那么t(1,2) = 2(京)，t(2,3) = 6（大）。<br>运用BIOES（begin intermediate other end single）标注策略进行字粒度和词粒度的NER标注。</p>
+<h2 id="3-1-Character-Based-Model"><a href="#3-1-Character-Based-Model" class="headerlink" title="3.1 Character-Based Model"></a>3.1 Character-Based Model</h2><p><img src="https://note.youdao.com/yws/api/personal/file/WEB7f49214d676576dcdda9aad470b0db33?method=download&amp;shareKey=8e11349817c7066b339a9bd9595564ce" alt="char-leverl"></p>
+<p>字粒度的ner模型如上图所示。<br>运用lstm-crf模型计算字序列<code>$c_{1},c_{2} ....c_{m}$</code>，每个字符<code>$c_{j}$</code>通过字向量查找表（character embedding lookup table）得到。<br>$$<br>X_{j}^{c} = e^{c}(c_{j}) \qquad(1)<br>$$<br>双向lstm计算字向量<code>$x_{1},x_{2} ...x_{m}$</code>得到隐藏层结果<code>$\overrightarrow(h_{1}^{c}),\overrightarrow(h_{2}^{c}) ...\overrightarrow(h_{m}^{c})$</code>以及反向的<code>$\overleftarrow(h_{1}^{c}),\overleftarrow(h_{2}^{c}) ...\overleftarrow(h_{m}^{c})$</code>，最后得到隐藏层结果为</p>
+<p>$$<br>h_{c}^{j} = [\overrightarrow(h^{c}<em>{j});\overleftarrow(h^{c}</em>{j}] \qquad (2)<br>$$</p>
+<p>最后应用CRF（公式（17））计算隐藏层结果<code>$h_{c}^{j}$</code>.</p>
+<ul>
+<li><p>Char + bichar. </p>
+<p>实验表明Character bigrams对于词分割有很大用处。通过拼接双字的embedding和单字的embedding，将字符 bigrams添加到字粒度的模型中。</p>
+</li>
+</ul>
+<p>$$<br> X_{j}^{c} = [e^{c}(c_{j});e^{b}(c_{j},c_{j+1})] \qquad (3)<br>$$</p>
+<ul>
+<li>Char + softword<br>将分词作为soft 特征能够提升性能，通过将分词的embedding与字符embedding拼接起来，将分词信息加到 character representation 中。</li>
+</ul>
+<p>$$<br> X_{j}^{c} = [e^{c}(c_{j});e^{s}( seg(c_{j}) )] \qquad (4)<br>$$</p>
+<p>得到的隐藏层状态如下：</p>
+<p>$$<br>h_{i}^{w} = [\overrightarrow(h^{w}<em>{i});\overleftarrow(h^{w}</em>{i}] \qquad (5)<br>$$</p>
+<h2 id="3-2-Word-Based-Model"><a href="#3-2-Word-Based-Model" class="headerlink" title="3.2 Word-Based Model"></a>3.2 Word-Based Model</h2><p><img src="https://note.youdao.com/yws/api/personal/file/WEB6290f32a0f17abc4adcb550261f48fbd?method=download&amp;shareKey=628adda913259538922e1a037be7cdea" alt="word-level"></p>
+<p>基于词粒度的NER如上。利用word embedding得到词的向量表示。</p>
+<p>$$<br>X_{i}^{w} = e^{w}(w_{i}) \qquad(6)<br>$$</p>
+<p>同样运用双向lstm得到双向隐藏层状态序列，并拼接得到最终的隐藏层状态。</p>
+<p>$$<br>h_{i}^{w} = [\overrightarrow(h^{w}<em>{i});\overleftarrow(h^{w}</em>{i}] \qquad<br>$$</p>
+<p>Integrating character representations:</p>
+<p>字符CNN和LSTM中都运用词来表示字符。对于本文的中文NER，两者都用上。也就是说词的表示为word embedding查找的词向量和字符序列拼接起来。</p>
+<p>$$<br>X^{w}<em>{i} = [e^{w}</em>{i}(w_{i}); X^{c}_{i}] \qquad (7)<br>$$</p>
+<ul>
+<li>Word + char LSTM</li>
+</ul>
+<p>每个输入字符的embedding表示为<code>$e^{c}(c_{j})$</code> ,对于<code>$w_{i}$</code>的字符<code>$c_{}$</code> bi-lstm计算字向量得到<code>$\overrightarrow(h_{t(i,1)}^{c}),\overrightarrow(h_{t(i,2)}^{c}) ...\overrightarrow(h_{t(i,len(i))}^{c})$</code>，以及反向的<code>$\overrightarrow(h_{t(i,1)}^{c}),\overrightarrow(h_{t(i,2)}^{c}) ...\overrightarrow(h_{t(i,len(i))}^{c})$</code>,最终对于<code>$w_{i}$</code>的字符级的表示为</p>
+<p>$$<br>X^{c}<em>{i} = [\overrightarrow(h</em>{t(i,len(i))}^{c});\overrightarrow(h_{t(i,len(i))}^{c})]<br>$$</p>
+<ul>
+<li>Word + char LSTM′</li>
+</ul>
+<ul>
+<li>Word + char CNN</li>
+</ul>
+<p>对于每个单词的字符序列应用标准的CNN，得到字符表示<code>$X^{c}_{i}$</code></p>
+<p>$$</p>
+<p>X^{c}<em>{i} = max</em>{t(i,1) &lt;= j &lt;= t(i,len(i))}<br>(W_{CNN}^{T}<br>\begin{bmatrix}e^{c}(c_{j - \frac {ke-1} {2})} \<br> … \<br>e^{c}(c_{j + \frac {ke-1} {2})}<br>\end{bmatrix}</p>
+<ul>
+<li>b_{CNN})<br>$$</li>
+</ul>
+<p><code>$W_{CNN} \quad b_{CNN}$</code>是参数，ke代表kenal个数，max表示最大pooling。</p>
+<h2 id="3-3-Lattice-Model"><a href="#3-3-Lattice-Model" class="headerlink" title="3.3 Lattice Model"></a>3.3 Lattice Model</h2><p>lattice lstm 的整体结构如上图figure2 所示，可以看作是char-based，加上了word-based cells和门控单元控制信息流向。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB66f6c5e6c56c887a97df9203f2a66720?method=download&amp;shareKey=59cbc3665400a0a54f1497087c4c3577" alt="lattice_ner"></p>
+<p>如上图所示，输入数据是字符序列 <code>$ c_{1}..c_{m}$</code>以及与词典匹配的子序列（词）。</p>
+<p><code>$W_{b,e}^{d}$</code>代表由索引b开始到索引e结束的子序列，比如“南京市长江大桥”<code>$W^{d}_{1,2}$</code> 即“南京”，<code>$W^{d}_{6,7}$</code> 即“大桥”。</p>
+<p>在lattice模型中有四种向量，input vectors, output hidden vectors, cell vectors ，gate vectors。</p>
+<p>作为基本组成，在character-based模型中，char输入向量表示每个字符。<br><code>$X_{j}^{c} = e^{c}(c_{j})$ \qquad (10)</code></p>
+<p>基本的循环结构组成为：字符细胞向量(character cell vector)<code>$c^{c}_{j}$</code>以及对于每个<code>$c_{j}$</code>得到的隐藏层向量<code>$h_{j}^{c}$</code>,其中<code>$c^{c}_{j}$</code>表示从句子开始到<code>$c_{j}$</code>的信息流，<code>$h^{c}_{j}$</code>用于CRF进行序列标记。</p>
+<p>基本LSTM函数如下：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEBf8b64dedd312ff26aeaab0d9d9f38d3d?method=download&amp;shareKey=3491775a5181e4888dae9658b272c0ac" alt="lstm function"></p>
+<p><strong>lattice lstm</strong><br>不同于char-based lstm，<code>$c^{c}_{j}$</code>的组成要考虑句子中与词典相匹配的子序列<code>$w_{b,e}^{d}$</code>.每个子序列可以表示为</p>
+<p>$$<br>X_{b,e}^{w} = e^{w}(w_{b,e}^{d}) \qquad (12)<br>$$</p>
+<p>另外，字细胞（word cell ）<code>$c_{b,e}^{w}$</code>表示从句子开始到该位置<code>$X_{b,e}^{w}$</code>的细胞状态。<code>$c_{b,e}^{w}$</code>的计算公式如下：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB063b9d81753b5c3e9ae9082dc3cab689?method=download&amp;shareKey=28ba20b3cb2149916b83ae3d05556574" alt="lattice word cell"></p>
+<p>没有输出，因为只有字粒度才有标注输出。</p>
+<p>对于<code>$c_{b,e}^{w}$</code>，有多种路径使得信息流向）<code>$c_{j}^{c}$</code>。比如“南京市长江大桥”中，<code>$c_{7}^{c}$</code>包括<br><code>$X_{7}^{c}$</code>（桥），<br><code>$c_{6,7}^{w}$</code>（大桥）以及<br><code>$c_{4,7}^{w}$</code>（长江大桥）。<br>将所有由<code>$ b \in \{b&#39;| w_{b&#39;,e}^{d} \in D\}$</code>开始的的<code>$c_{b,e}^{w}$</code>与<code>$c_{e}^{c}$</code>联系起来。用另一个门<code>$i_{b,e}^{c}$</code> 来控制信息<code>$c_{b,e}^{w}$</code>流向<code>$c_{b,e}^{c}$</code>。</p>
+<p>$$<br>i^{c}<em>{b,e} = \sigma (W^{lT}<br>\begin{bmatrix}<br>X</em>{e}{c} \<br>c_{b,e}^{w}<br>\end{bmatrix}<br>+b^{l}<br>\qquad (14)<br>$$</p>
+<p>所以，细胞状态<code>$c_{j}^{c}$</code>的计算变为：</p>
+<p>$$<br>c_{j}^{c} =  \sum_{b\in {b’| w_{b’,j}^{d} \in D}}<br>\alpha_{b,j}^{c} \bigodot  c_{b,j}^{w} +<br>\alpha^{c}<em>{j} \bigodot \tilde(c</em>{j}^{c}) \qquad (15)<br>$$</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB4fdfcede7d46963b0ed30bb105748a7f?method=download&amp;shareKey=8b67edfa873a201e290276a95e4c1012" alt=""></p>
+<p>最终的隐藏状态<code>$h_{j}^{c}$</code>计算公式与Eq（11）相同。</p>
+<p>$$<br>h_{j}^{c} = o_{j}^{c} \bigodot tanh(c_{j}^{c})<br>$$</p>
+<p>通过损失函数的最优化，反向传播调整<code>$W^{c},b^{c},W^{w},b^{w},W^{l},b^{l}$</code>使得模型在NER标记过程中能够动态选择相关性最强的词。</p>
+<h2 id="3-4-Decoding-and-Training"><a href="#3-4-Decoding-and-Training" class="headerlink" title="3.4 Decoding and Training"></a>3.4 Decoding and Training</h2><p>CRF层在隐藏层的上一层，标记序列y的概率计算公式为：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEBa7b3186a364025dbbba392bf31824e26?method=download&amp;shareKey=7ea8071bcd530044d91adbabf9f3d8af" alt="eq 17"></p>
+<p>在word-based或者char-based输入序列上运用一阶维特比算法得到得分最高的标记序列。<br>给定手工标注的训练数据<code>$\{(s_{i}, y_{i})\} | _{i=1}^{N}$</code>,句子级别的对数似然损失函数（使用L2正则）计算公式为：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEBc713500f216293eb80ddf385e291f2a9?method=download&amp;shareKey=74b15993625a05007024583c2b743771" alt="loss function"></p>
+<h1 id="4-Experimental"><a href="#4-Experimental" class="headerlink" title="4 Experimental"></a>4 Experimental</h1><p>展开了一系列实验拓展研究词粒度的lattice lstm 在NER上的性能。另一个目的是对比不同参数设置下的基于字和基于词的中文NER性能。</p>
+<h2 id="4-1-Experimental"><a href="#4-1-Experimental" class="headerlink" title="4.1  Experimental"></a>4.1  Experimental</h2><ul>
+<li>数据：</li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB591a50b93830ceace48efaec89918c99?method=download&amp;shareKey=95d02799e39a53cae9a0f8c4b042a2f1" alt="data"></p>
+<p>resume数据开放。</p>
+<ul>
+<li><p>分词：</p>
+<p>OntoNotes 以及 MSRA train data ：固定标准的分割。<br>Yang 神经网络分词应用于MSRA的test/dev的分词。</p>
+</li>
+</ul>
+<ul>
+<li>Word Embeddings</li>
+</ul>
+<p>使用word2vec在 自动分词的Chinese Giga-Word数据集上 预训练了embedding。Character and character bigram embeddings也是基于此预训练的。</p>
+<ul>
+<li>Hyper-parameter settings. </li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB64fc7b64f4d13721916ac6eabf280291?method=download&amp;shareKey=6a6e2b9c6acb33d2b7d17f714f80fd51" alt="Hyper-parameter"></p>
+<p>在word embedding和char embedding中都使用dropout层，选择SGD进行损失函数的优化。</p>
+<h2 id="4-2-Development-Experiments"><a href="#4-2-Development-Experiments" class="headerlink" title="4.2 Development Experiments"></a>4.2 Development Experiments</h2><ul>
+<li><p>Character-based NER</p>
+</li>
+<li><p>Word-based NER.</p>
+</li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB8218451fc2f6fdc9e8a0fc37edc7f920?method=download&amp;shareKey=1e0d01638c9cddefcf70d2e34cc123cd" alt="Character-Word-based result"></p>
+<ul>
+<li>Lattice-based NER. </li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB7ea3e529044a35661d32c8266dd9f562?method=download&amp;shareKey=8870a7fbfd66e3b7665269e5aa641957" alt=""></p>
+<h2 id="4-3-Final-Results"><a href="#4-3-Final-Results" class="headerlink" title="4.3 Final Results"></a>4.3 Final Results</h2><p><img src="https://note.youdao.com/yws/api/personal/file/WEBb25cef51add1bc41ce58f11ab6481eef?method=download&amp;shareKey=ccb230ab17b94679a58a10595c3a5686" alt="final res"></p>
+<h2 id="4-4-Discussion"><a href="#4-4-Discussion" class="headerlink" title="4.4 Discussion"></a>4.4 Discussion</h2><ul>
+<li>F1 against sentence length.</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/paper-notes/" rel="tag"># -paper notes</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+          <div class="wp_rating">
+            <div id="wpac-rating"></div>
+          </div>
+        
+
+        
+
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/23/test/" rel="next" title="test">
+                <i class="fa fa-chevron-left"></i> test
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/21/hello-world/" rel="prev" title="Hello World">
+                Hello World <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Amy</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/xuman-Amy" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/Amy_mm/" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-CSDN"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:buptamy@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#paper-title：《Chinese-NER-Using-Lattice-LSTM》"><span class="nav-number">1.</span> <span class="nav-text">paper title：《Chinese NER Using Lattice LSTM》</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">2.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-引言"><span class="nav-number">3.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-相关工作"><span class="nav-number">4.</span> <span class="nav-text">2 相关工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-模型"><span class="nav-number">5.</span> <span class="nav-text">3 模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Character-Based-Model"><span class="nav-number">5.1.</span> <span class="nav-text">3.1 Character-Based Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Word-Based-Model"><span class="nav-number">5.2.</span> <span class="nav-text">3.2 Word-Based Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Lattice-Model"><span class="nav-number">5.3.</span> <span class="nav-text">3.3 Lattice Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Decoding-and-Training"><span class="nav-number">5.4.</span> <span class="nav-text">3.4 Decoding and Training</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Experimental"><span class="nav-number">6.</span> <span class="nav-text">4 Experimental</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Experimental"><span class="nav-number">6.1.</span> <span class="nav-text">4.1  Experimental</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Development-Experiments"><span class="nav-number">6.2.</span> <span class="nav-text">4.2 Development Experiments</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Final-Results"><span class="nav-number">6.3.</span> <span class="nav-text">4.3 Final Results</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Discussion"><span class="nav-number">6.4.</span> <span class="nav-text">4.4 Discussion</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Amy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'xuman-Amy# MUST HAVE, Your Github ID',
+            repo: 'xuman-Amy.github.io# MUST HAVE, The repo you use to store Gitment comments',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'c43680f61789011096eb106066420686cc354729# EITHER this or proxy_gateway, Github access secret token for the Gitment',
+            
+                client_id: '0b3ec68f8515185e02d2# MUST HAVE, Github client id for the Gitment'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("<app_id>", "");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+  <script type="text/javascript">
+  wpac_init = window.wpac_init || [];
+  wpac_init.push({widget: 'Rating', id: <app_id>,
+    el: 'wpac-rating',
+    color: 'fc6423'
+  });
+  (function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = '//embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+  })();
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
